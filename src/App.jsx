@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react'
 import { SearchBox } from '@mapbox/search-js-react'
 import mapboxgl from 'mapbox-gl'
-import { accessToken } from './Map'
+import { accessToken } from './components/Map'
 
-import Map from './Map'
-import Card from './Card'
-import Modal from './Modal'
+import Map from './components/Map'
+import Card from './components/Card'
+import Modal from './components/Modal'
 
 import './styles.css'
 
@@ -35,8 +35,8 @@ export default function Home() {
           </div>
         </nav>
         <div className='relative flex grow shrink min-h-0'>
-          <div className='flex-[0.7] grow relative'>
-            <div className='absolute top-3 left-3 z-10'>
+          <div className='flex-[0.7] grow relative border-t-4 border-red-200'>
+            <div className='absolute top-3 left-[40%] z-10'>
               <SearchBox
                 className='w-32'
                 options={{
