@@ -10,14 +10,14 @@ Products used:
 
 ## Local Development
 
-Install dependencies at the top level of the monorepo:
+Install dependencies:
 
 ```
-> yarn
+> npm i
 ```
 
-cd into this directory and run the development server:
+Run the development server:
 
 ```
-cd projects/demo-realestate && yarn dev
+npm run dev
 ```
