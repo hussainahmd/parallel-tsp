@@ -35,6 +35,15 @@ export default function Home() {
           </div>
         </nav>
         <div className='relative flex grow shrink min-h-0'>
+          {/* sidebar */}
+          <div className='flex-[0.3] h-full bg-white border-l-2 border-black'>
+            <div className='text-2xl text-black font-semibold w-full mb-1.5'>
+              Sidebar
+            </div>
+            <div className='grid grid-cols-1 gap-4'>
+              Other content
+            </div>
+          </div>
           <div className='flex-[0.7] grow relative border-t-4 border-red-200'>
             <div className='absolute top-3 left-[40%] z-10'>
               <SearchBox
@@ -71,16 +80,6 @@ export default function Home() {
             <Map
               onLoad={handleMapLoad}
             />
-          </div>
-
-          {/* sidebar */}
-          <div className='flex-[0.3] h-full bg-white border-l-2 border-black'>
-            <div className='text-2xl text-black font-semibold w-full mb-1.5'>
-              Sidebar
-            </div>
-            <div className='grid grid-cols-1 gap-4'>
-              Other content
-            </div>
           </div>
         </div>
       </main>
