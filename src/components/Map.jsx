@@ -15,6 +15,7 @@ const Map = ({ onLoad }) => {
     const mapContainer = useRef(null);
     const [mapLoaded, setMapLoaded] = useState(false);
     const mapRef = useRef(null);
+    const labelIndexRef = useRef(0); // Ref to keep track of the label index
 
     const [center, setCenter] = useState(INITIAL_CENTER);
     const [zoom, setZoom] = useState(INITIAL_ZOOM);
@@ -43,7 +44,6 @@ const Map = ({ onLoad }) => {
         });
 
         map.on('contextmenu', (e) => {
-            console.log('contextmenu', e);
             const coordinates = e.lngLat;
             addMarker(coordinates, map);
         });
@@ -53,26 +53,21 @@ const Map = ({ onLoad }) => {
         };
     }, []);
 
+
     const addMarker = (coordinates, map) => {
-        const markerEl = document.createElement('div')
-        markerEl.className = 'bg-cover w-14 h-14 rounded-full cursor-pointer relative flex items-center justify-center'
-        markerEl.style.backgroundImage = 'url(https://cdn-icons-png.flaticon.com/512/5860/5860579.png)'
-        markerEl.innerHTML = `
-            <span class="bg-white absolute rounded-full px-1">A</span>
-        `
+        const labelIndex = labelIndexRef.current; // Get the current label index
+        const label = String.fromCharCode(65 + labelIndex);
+        console.log('labelIndex', labelIndex, 'label', label);
 
-        const markerLabel = document.createElement('span')
-
-
-        const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, })
+        const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
             .setHTML(
-            `<div>
-            <p>Coordinates</p>
-            <p>Longitude: ${coordinates.lng.toFixed(4)}</p>
-            <p>Latitude: ${coordinates.lat.toFixed(4)}</p>
-            <button class="remove-marker" style="background: red; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer;">
-                Remove Marker
-            </button>
+                `<div class="p-1">
+                <p class="font-bold underline">Coordinates</p>
+                <p>Longitude: ${coordinates.lng.toFixed(4)}</p>
+                <p>Latitude: ${coordinates.lat.toFixed(4)}</p>
+                <button class="bg-red-500 transition text-white border-none p-1 rounded cursor-pointer mt-2 remove-marker">
+                    Remove
+                </button>
             </div>`
             );
 
@@ -80,9 +75,16 @@ const Map = ({ onLoad }) => {
             .setLngLat(coordinates)
             .setPopup(popup)
             .addTo(map)
+            .addClassName('marker');
 
-        // marker.addClassName('marker')
-        // marker.getElement().appendChild() = markerEl.innerHTML
+        const markerLabel = document.createElement('span');
+        markerLabel.className = 'absolute top-[6px] text-xl bg-white rounded-full px-1';
+        markerLabel.innerHTML = label; // Set the label
+
+        const markerElement = marker.getElement();
+        markerElement.firstChild.style.width = '60px';
+        markerElement.firstChild.style.height = '60px';
+        markerElement.appendChild(markerLabel);
 
         popup.on('open', () => {
             const removeButton = document.querySelector('.remove-marker');
@@ -94,13 +96,36 @@ const Map = ({ onLoad }) => {
         });
 
         setMarkers((prevMarkers) => [...prevMarkers, { marker, coordinates }]);
+
+        labelIndexRef.current += 1; // Increment the label index for the next marker
     };
 
 
     const removeMarker = (markerToRemove) => {
+
         markerToRemove.remove();
-        setMarkers((prevMarkers) => prevMarkers.filter(({ marker }) => marker !== markerToRemove));
+
+        // Update the markers state
+        setMarkers((prevMarkers) => {
+            const updatedMarkers = prevMarkers.filter(({ marker }) => marker !== markerToRemove);
+
+            // Reassign labels for all remaining markers
+            updatedMarkers.forEach((entry, index) => {
+                const newLabel = String.fromCharCode(65 + index); // Recalculate label
+                const markerElement = entry.marker.getElement();
+                const labelElement = markerElement.querySelector('span');
+                if (labelElement) {
+                    labelElement.innerHTML = newLabel; // Update the label in the DOM
+                }
+            });
+
+            // Update the labelIndexRef to match the new markers count
+            labelIndexRef.current = updatedMarkers.length;
+
+            return updatedMarkers;
+        });
     };
+
 
     return (
         <>

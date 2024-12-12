@@ -4,8 +4,6 @@ import mapboxgl from 'mapbox-gl'
 import { accessToken } from './components/Map'
 
 import Map from './components/Map'
-import Card from './components/Card'
-import Modal from './components/Modal'
 
 import './styles.css'
 
@@ -62,7 +60,6 @@ export default function Home() {
                 value={searchValue}
                 onChange={handleSearchChange}
                 accessToken={accessToken}
-                marker
                 mapboxgl={mapboxgl}
                 placeholder='Search for an address, city, zip, etc'
                 map={mapInstanceRef.current}
