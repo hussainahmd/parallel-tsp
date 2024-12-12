@@ -2,15 +2,18 @@ import { create } from 'zustand';
 
 const useMarkerStore = create((set) => ({
     markers: [],
-    addMarker: (marker) =>
+    addMarker: (newMarker) =>
         set((state) => ({
-            markers: [...state.markers, marker],
+            markers: [...state.markers, newMarker],
         })),
-    removeMarker: (label) =>
+    removeMarker: (markerToRemove) =>
         set((state) => ({
-            markers: state.markers.filter((m) => m.label !== label),
+            markers: state.markers.filter(({ marker }) => marker !== markerToRemove),
         })),
-    updateMarkers: (updatedMarkers) => set({ markers: updatedMarkers }),
+    updateMarkers: (updatedMarkers) =>
+        set(() => ({
+            markers: updatedMarkers,
+        })),
 }));
 
 export default useMarkerStore;

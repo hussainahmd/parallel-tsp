@@ -1,9 +1,9 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import { Navigation } from 'lucide-react';
+import useMarkerStore from '../store';
 
 export const accessToken = (mapboxgl.accessToken =
     'pk.eyJ1IjoibGFicy1zYW5kYm94IiwiYSI6ImNrMTZuanRmZDA2eGQzYmxqZTlnd21qY3EifQ.Q7DM5HqE5QJzDEnCx8BGFw');
@@ -13,19 +13,21 @@ const INITIAL_ZOOM = 12;
 
 const Map = ({ onLoad }) => {
     const mapContainer = useRef(null);
-    const [mapLoaded, setMapLoaded] = useState(false);
     const mapRef = useRef(null);
-    const labelIndexRef = useRef(0); // Ref to keep track of the label index
+    const labelIndexRef = useRef(0);
 
+    const [mapLoaded, setMapLoaded] = useState(false);
     const [center, setCenter] = useState(INITIAL_CENTER);
     const [zoom, setZoom] = useState(INITIAL_ZOOM);
-    const [markers, setMarkers] = useState([]);
+
+    const addMarkerGlobal = useMarkerStore((state) => state.addMarker);
+    const removeMarkerGlobal = useMarkerStore((state) => state.removeMarker);
 
     useEffect(() => {
         const map = (mapRef.current = new mapboxgl.Map({
             container: mapContainer.current,
-            center: center,
-            zoom: zoom,
+            center: INITIAL_CENTER,
+            zoom: INITIAL_ZOOM,
             style: 'mapbox://styles/mapbox/streets-v11',
         }));
 
@@ -53,11 +55,9 @@ const Map = ({ onLoad }) => {
         };
     }, []);
 
-
     const addMarker = (coordinates, map) => {
         const labelIndex = labelIndexRef.current; // Get the current label index
-        const label = String.fromCharCode(65 + labelIndex);
-        console.log('labelIndex', labelIndex, 'label', label);
+        const label = String.fromCharCode(65 + labelIndex); // Generate label
 
         const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
             .setHTML(
@@ -77,6 +77,7 @@ const Map = ({ onLoad }) => {
             .addTo(map)
             .addClassName('marker');
 
+        // Add custom marker label
         const markerLabel = document.createElement('span');
         markerLabel.className = 'absolute top-[6px] text-xl bg-white rounded-full px-1';
         markerLabel.innerHTML = label; // Set the label
@@ -86,6 +87,7 @@ const Map = ({ onLoad }) => {
         markerElement.firstChild.style.height = '60px';
         markerElement.appendChild(markerLabel);
 
+        // Handle marker removal logic
         popup.on('open', () => {
             const removeButton = document.querySelector('.remove-marker');
             if (removeButton) {
@@ -95,36 +97,54 @@ const Map = ({ onLoad }) => {
             }
         });
 
-        setMarkers((prevMarkers) => [...prevMarkers, { marker, coordinates }]);
+        // Use Zustand's addMarker action to update global state
+        const addMarkerToStore = useMarkerStore.getState().addMarker;
+        addMarkerToStore({
+            marker,
+            coordinates,
+            label, // Include the label in the marker data
+        });
 
-        labelIndexRef.current += 1; // Increment the label index for the next marker
+        // Increment the label index for the next marker
+        labelIndexRef.current += 1;
     };
 
 
-    const removeMarker = (markerToRemove) => {
 
+
+    const removeMarker = (markerToRemove) => {
+        // Remove the marker from the map
         markerToRemove.remove();
 
-        // Update the markers state
-        setMarkers((prevMarkers) => {
-            const updatedMarkers = prevMarkers.filter(({ marker }) => marker !== markerToRemove);
+        // Use Zustand's removeMarker action to update the global state
+        const { markers, removeMarker, updateMarkers } = useMarkerStore.getState();
 
-            // Reassign labels for all remaining markers
-            updatedMarkers.forEach((entry, index) => {
+        // Remove the marker from Zustand state
+        removeMarker(markerToRemove);
+
+        // Recalculate labels and update Zustand state
+        const updatedMarkers = markers
+            .filter(({ marker }) => marker !== markerToRemove)
+            .map((entry, index) => {
                 const newLabel = String.fromCharCode(65 + index); // Recalculate label
                 const markerElement = entry.marker.getElement();
                 const labelElement = markerElement.querySelector('span');
                 if (labelElement) {
                     labelElement.innerHTML = newLabel; // Update the label in the DOM
                 }
+                return {
+                    ...entry,
+                    label: newLabel, // Update the label in the marker object
+                };
             });
 
-            // Update the labelIndexRef to match the new markers count
-            labelIndexRef.current = updatedMarkers.length;
+        // Update the markers in Zustand state with updated labels
+        updateMarkers(updatedMarkers);
 
-            return updatedMarkers;
-        });
+        // Update the labelIndexRef to match the new markers count
+        labelIndexRef.current = updatedMarkers.length;
     };
+
 
 
     return (

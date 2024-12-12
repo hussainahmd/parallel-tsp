@@ -13,6 +13,7 @@
     "@mapbox/mapbox-gl-geocoder": "^5.0.2",
     "@mapbox/search-js-react": "^1.0.0-beta.21",
     "@turf/bbox": "^6.5.0",
+    "axios": "^1.7.9",
     "lucide-react": "^0.468.0",
     "mapbox-gl": "^3.3.0",
     "react": "^18",
