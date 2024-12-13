@@ -71,7 +71,7 @@ const Sidebar = () => {
                     <span className="font-semibold text-gray-700">Selected Nodes</span>
                 </div>
                 
-                <div className="overflow-y-auto max-h-[250px] bg-white">
+                <div className="overflow-y-scroll min-h-[280px] bg-white">
                     {markers.length === 0 ? (
                         <div className="text-center text-gray-500 p-4">
                             No nodes selected
@@ -79,7 +79,7 @@ const Sidebar = () => {
                     ) : (
                         <table className="w-full">
                             <thead className="bg-gray-50 sticky top-0">
-                                <tr className="text-xs text-gray-600">
+                                <tr className="text-gray-600">
                                     <th className="p-2 text-left">Label</th>
                                     <th className="p-2 text-left">Longitude</th>
                                     <th className="p-2 text-left">Latitude</th>
@@ -103,7 +103,7 @@ const Sidebar = () => {
             </div>
 
             {/* Configuration Section */}
-            <div className="p-4 bg-gray-50 space-y-4">
+            <div className="p-4 bg-gray-50 space-y-4 border-t">
                 <div>
                     <div className="flex items-center mb-2 text-gray-700">
                         <AlignVerticalSpaceAroundIcon className="mr-2 text-blue-500" />

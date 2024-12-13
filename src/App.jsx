@@ -21,9 +21,6 @@ export default function Home() {
 
   return (
     <main className="flex flex-col h-full w-full">
-      {/* <nav className="flex h-14 justify-center items-center border-b-2 border-black">
-        <div className="font-semibold">Parallel TSP</div>
-      </nav> */}
       <div className="relative flex grow shrink min-h-0">
         <div className="flex-[0.4] h-full bg-white border-r-2 border-black">
           <Sidebar />
@@ -48,7 +45,7 @@ export default function Home() {
               accessToken={accessToken}
               // marker
               mapboxgl={mapboxgl}
-              placeholder='Search for an address, city, zip, etc'
+              placeholder='Search for a location'
               map={mapInstanceRef.current}
               theme={{
                 variables: {

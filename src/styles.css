@@ -61,7 +61,6 @@ body {
 .mapboxgl-popup {
   max-width: 200px;
   background-color: #b3dae4;
-  /* background-color: #fff; */
   padding: 10px;
   border-radius: 10px;
   border: 3px solid #3fb1ce;
