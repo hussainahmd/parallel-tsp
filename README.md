@@ -6,10 +6,10 @@ Products used:
 * [Static Images API](https://docs.mapbox.com/api/maps/static-images/)
 
 External python libraries:
-numpy
-mpi4py
-Flask
-Flask-Cors 
+* numpy
+* mpi4py
+* Flask
+* Flask-Cors 
 
 ## Local Development
 
